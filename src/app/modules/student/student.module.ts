@@ -5,6 +5,9 @@ import {
   Student,
   UserName,
 } from './student.interface';
+import { boolean, required, string } from 'joi';
+import bcrypt from 'bcrypt'
+import config from '../../config';
 
 // Guardian schema
 const guardianSchema = new Schema<Guardian>({
@@ -71,6 +74,10 @@ const studentSchema = new Schema<Student>({
     required: [true, 'Student ID is required'],
     unique: true,
   },
+  passWord: {
+    type: String,
+    required: [true, "passWord Is required"],
+  },
   name: { type: UserNameSchema, required: [true, 'Name is required'] },
   gender: {
     type: String,
@@ -123,6 +130,55 @@ const studentSchema = new Schema<Student>({
   },
   profileImg: { type: String },
   isActive: { type: String, enum: ['active', 'blocked'], default: 'active' },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  }
+}, {
+  toJSON: {
+    virtuals: true
+  }
 });
+
+// virtual
+studentSchema.virtual("fullName").get(function () {
+  return (
+    `${this.name.firstName}  ${this.name.middleName}  ${this.name.lastName}`
+  )
+})
+
+// doc Middleware pre save middleware / hook
+studentSchema.pre("save", async function (next) {
+  console.log(this, "pre hook: we will save te data");
+
+  const user = this;
+  // hashing password and save into DB
+  user.passWord = await bcrypt.hash(user.passWord, Number(config.bcrypt_salt_rounds))
+  next();
+});
+
+// doc Middleware  post save middleware / hook
+studentSchema.post("save", function (doc, next) {
+  console.log(this, "post hook: we will save te data");
+  doc.passWord = ""
+  next()
+});
+
+// Query Middleware
+studentSchema.pre("find", function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre("findOne", function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre("aggregate", function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
+  next();
+});
+
 
 export const StudentModel = model<Student>('Student', studentSchema);
