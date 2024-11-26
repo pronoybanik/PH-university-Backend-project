@@ -14,8 +14,8 @@ app.use('/api/v1/user', UserRoute);
 
 app.get('/', (req, res) => {
   res.status(200).json({
-    message: "welcome to the server 5000"
-  })
+    message: 'welcome to the server 5000',
+  });
 });
 
 export default app;

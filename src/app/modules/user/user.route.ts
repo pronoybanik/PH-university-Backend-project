@@ -4,5 +4,4 @@ const route = express.Router();
 
 route.post('/create-student', UserController.createStudent);
 
-
 export const UserRoute = route;

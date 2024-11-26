@@ -104,7 +104,7 @@ const StudentValidationSchema = Joi.object({
   isActive: Joi.string().valid('active', 'blocked').default('active').messages({
     'any.only': '"isActive" must be either "active" or "blocked"',
   }),
-  isDeleted: Joi.boolean()
+  isDeleted: Joi.boolean(),
 });
 
 export default StudentValidationSchema;
