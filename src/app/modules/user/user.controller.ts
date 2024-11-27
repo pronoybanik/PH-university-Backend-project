@@ -1,25 +1,23 @@
 import { UserService } from './user.service';
-import { Request, Response } from 'express'; // Ensure you import correctly
+import { NextFunction, Request, Response } from 'express';
 
-const createStudent = async (req: Request, res: Response) => {
+const createStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userData = req.body;
+    const { Student: studentData, password } = req.body;
 
-    const result = await UserService.createStudentIntoBD(userData);
-    console.log('log 4', result);
+    const result = await UserService.createStudentIntoBD(studentData, password);
 
     res.status(200).json({
       success: true,
       message: 'Student is created successfully',
       data: result,
     });
-  } catch (error: any) {
-    console.error('Error occurred: ', error); // Debugging logs
-    res.status(400).json({
-      success: false,
-      message: error.message || 'Something went wrong',
-      err: error,
-    });
+  } catch (error) {
+    next(error);
   }
 };
 

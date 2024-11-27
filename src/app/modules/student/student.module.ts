@@ -5,9 +5,6 @@ import {
   Student,
   UserName,
 } from './student.interface';
-import { boolean, required, string } from 'joi';
-import bcrypt from 'bcrypt';
-import config from '../../config';
 
 // Guardian schema
 const guardianSchema = new Schema<Guardian>({
@@ -75,9 +72,11 @@ const studentSchema = new Schema<Student>(
       required: [true, 'Student ID is required'],
       unique: true,
     },
-    passWord: {
-      type: String,
-      required: [true, 'passWord Is required'],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'user id is required'],
+      unique: true,
+      ref: 'User',
     },
     name: { type: UserNameSchema, required: [true, 'Name is required'] },
     gender: {
@@ -130,7 +129,6 @@ const studentSchema = new Schema<Student>(
       required: [true, 'Local guardian information is required'],
     },
     profileImg: { type: String },
-    isActive: { type: String, enum: ['active', 'blocked'], default: 'active' },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -146,26 +144,6 @@ const studentSchema = new Schema<Student>(
 // virtual
 studentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName}  ${this.name.middleName}  ${this.name.lastName}`;
-});
-
-// doc Middleware pre save middleware / hook
-studentSchema.pre('save', async function (next) {
-  console.log(this, 'pre hook: we will save te data');
-
-  const user = this;
-  // hashing password and save into DB
-  user.passWord = await bcrypt.hash(
-    user.passWord,
-    Number(config.bcrypt_salt_rounds),
-  );
-  next();
-});
-
-// doc Middleware  post save middleware / hook
-studentSchema.post('save', function (doc, next) {
-  console.log(this, 'post hook: we will save te data');
-  doc.passWord = '';
-  next();
 });
 
 // Query Middleware

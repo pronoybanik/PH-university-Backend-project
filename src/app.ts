@@ -1,7 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import { StudentRoutes } from './app/modules/student/student.route';
 import { UserRoute } from './app/modules/user/user.route';
+import globalErrorHandler from './app/middlewares/globalErrorhandler';
 const app = express();
 
 //parsers
@@ -17,5 +18,7 @@ app.get('/', (req, res) => {
     message: 'welcome to the server 5000',
   });
 });
+
+app.use(globalErrorHandler);
 
 export default app;
