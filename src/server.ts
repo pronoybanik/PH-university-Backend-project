@@ -1,7 +1,6 @@
 import app from './app';
 import config from './app/config';
 import mongoose from 'mongoose';
-const port = 5000;
 
 async function main() {
   try {
