@@ -1,5 +1,7 @@
+import sendResponse from '../../utils/sendResponst';
 import { UserService } from './user.service';
 import { NextFunction, Request, Response } from 'express';
+import httpStatus from 'http-status';
 
 const createStudent = async (
   req: Request,
@@ -11,9 +13,10 @@ const createStudent = async (
 
     const result = await UserService.createStudentIntoBD(studentData, password);
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: 'Student is created successfully',
+      message: 'Student create succesfully',
       data: result,
     });
   } catch (error) {
