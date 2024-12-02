@@ -59,7 +59,7 @@ const LocalGuardianSchema = Joi.object({
 });
 
 // Student Joi Schema
-const StudentValidationSchema = Joi.object({
+const CreateStudentValidationSchema = Joi.object({
   body: Joi.object({
     password: Joi.string().required(),
     student: Joi.object({
@@ -69,7 +69,7 @@ const StudentValidationSchema = Joi.object({
       gender: Joi.string().valid('male', 'female').required().messages({
         'any.only': '"Gender" must be either "male" or "female"',
       }),
-      dateOfBirth: Joi.string().optional(),
+      dateOfBirth: Joi.date().optional(),
       email: Joi.string().email().required().messages({
         'string.email': '"Email" must be a valid email address',
         'string.empty': '"Email" is required',
@@ -109,5 +109,5 @@ const StudentValidationSchema = Joi.object({
 });
 
 export const StudentValidations = {
-  StudentValidationSchema,
+  CreateStudentValidationSchema,
 };

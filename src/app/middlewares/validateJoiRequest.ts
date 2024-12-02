@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
 
-const validateRequest = (schema: Joi.ObjectSchema) => {
+const validateJoiRequest = (schema: Joi.ObjectSchema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       // validation..
@@ -15,4 +15,4 @@ const validateRequest = (schema: Joi.ObjectSchema) => {
   };
 };
 
-export default validateRequest;
+export default validateJoiRequest;

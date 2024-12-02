@@ -28,7 +28,7 @@ export type Student = {
   passWord: string;
   name: UserName;
   gender: 'male' | 'female';
-  dateOfBirth?: string;
+  dateOfBirth?: Date;
   email: string;
   contactNo: string;
   emergencyContactNo: string;
