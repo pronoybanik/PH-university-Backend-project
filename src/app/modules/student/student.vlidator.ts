@@ -60,51 +60,54 @@ const LocalGuardianSchema = Joi.object({
 
 // Student Joi Schema
 const StudentValidationSchema = Joi.object({
-  id: Joi.string().required().messages({
-    'string.empty': '"Student ID" is required',
-  }),
-  passWord: Joi.string().required(),
-  name: UserNameSchema.required().messages({
-    'object.base': '"Name" is required',
-  }),
-  gender: Joi.string().valid('male', 'female').required().messages({
-    'any.only': '"Gender" must be either "male" or "female"',
-  }),
-  dateOfBirth: Joi.string().optional(),
-  email: Joi.string().email().required().messages({
-    'string.email': '"Email" must be a valid email address',
-    'string.empty': '"Email" is required',
-  }),
-  contactNo: Joi.string().required().messages({
-    'string.empty': '"Contact number" is required',
-  }),
-  emergencyContactNo: Joi.string().required().messages({
-    'string.empty': '"Emergency contact number" is required',
-  }),
-  bloodGroup: Joi.string()
-    .valid('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')
-    .required()
-    .messages({
-      'any.only':
-        '"Blood group" must be one of: "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"',
+  body: Joi.object({
+    password: Joi.string().required(),
+    student: Joi.object({
+      name: UserNameSchema.required().messages({
+        'object.base': '"Name" is required',
+      }),
+      gender: Joi.string().valid('male', 'female').required().messages({
+        'any.only': '"Gender" must be either "male" or "female"',
+      }),
+      dateOfBirth: Joi.string().optional(),
+      email: Joi.string().email().required().messages({
+        'string.email': '"Email" must be a valid email address',
+        'string.empty': '"Email" is required',
+      }),
+      contactNo: Joi.string().required().messages({
+        'string.empty': '"Contact number" is required',
+      }),
+      emergencyContactNo: Joi.string().required().messages({
+        'string.empty': '"Emergency contact number" is required',
+      }),
+      bloodGroup: Joi.string()
+        .valid('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')
+        .required()
+        .messages({
+          'any.only':
+            '"Blood group" must be one of: "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"',
+        }),
+      presentAddress: Joi.string().required().messages({
+        'string.empty': '"Present address" is required',
+      }),
+      permanentAddress: Joi.string().required().messages({
+        'string.empty': '"Permanent address" is required',
+      }),
+      guardian: GuardianSchema.required().messages({
+        'object.base': '"Guardian information" is required',
+      }),
+      localGuardian: LocalGuardianSchema.required().messages({
+        'object.base': '"Local guardian information" is required',
+      }),
+      profileImg: Joi.string().optional(),
+      // isActive: Joi.string().valid('active', 'blocked').default('active').messages({
+      //   'any.only': '"isActive" must be either "active" or "blocked"',
+      // }),
+      isDeleted: Joi.boolean(),
     }),
-  presentAddress: Joi.string().required().messages({
-    'string.empty': '"Present address" is required',
   }),
-  permanentAddress: Joi.string().required().messages({
-    'string.empty': '"Permanent address" is required',
-  }),
-  guardian: GuardianSchema.required().messages({
-    'object.base': '"Guardian information" is required',
-  }),
-  localGuardian: LocalGuardianSchema.required().messages({
-    'object.base': '"Local guardian information" is required',
-  }),
-  profileImg: Joi.string().optional(),
-  isActive: Joi.string().valid('active', 'blocked').default('active').messages({
-    'any.only': '"isActive" must be either "active" or "blocked"',
-  }),
-  isDeleted: Joi.boolean(),
 });
 
-export default StudentValidationSchema;
+export const StudentValidations = {
+  StudentValidationSchema,
+};

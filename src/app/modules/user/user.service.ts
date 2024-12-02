@@ -11,7 +11,7 @@ const createStudentIntoBD = async (studentData: Student, password: string) => {
   // set role
   userData.role = 'student';
   // set id
-  userData.id = '23223424';
+  userData.id = '12345678';
 
   const newUser = await UserModel.create(userData);
 
