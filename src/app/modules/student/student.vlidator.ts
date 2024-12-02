@@ -100,9 +100,7 @@ const CreateStudentValidationSchema = Joi.object({
         'object.base': '"Local guardian information" is required',
       }),
       profileImg: Joi.string().optional(),
-      // isActive: Joi.string().valid('active', 'blocked').default('active').messages({
-      //   'any.only': '"isActive" must be either "active" or "blocked"',
-      // }),
+      admissionSemester: Joi.string(),
       isDeleted: Joi.boolean(),
     }),
   }),
