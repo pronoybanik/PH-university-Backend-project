@@ -101,6 +101,7 @@ const CreateStudentValidationSchema = Joi.object({
       }),
       profileImg: Joi.string().optional(),
       admissionSemester: Joi.string(),
+      academicDepartment: Joi.string(),
       isDeleted: Joi.boolean(),
     }),
   }),
