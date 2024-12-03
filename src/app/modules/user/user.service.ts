@@ -20,7 +20,7 @@ const createStudentIntoBD = async (payload: Student, password: string) => {
   );
 
   // set  generated id
-  userData.id = await generateStudentId(admissionSemester as TAcademicSemester);;
+  userData.id = await generateStudentId(admissionSemester as TAcademicSemester);
 
   const newUser = await UserModel.create(userData);
 

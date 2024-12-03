@@ -12,6 +12,8 @@ route.post(
   AcademicSemesterControllers.createAcademicSemester,
 );
 
+route.get('/', AcademicSemesterControllers.getAllAcademicSemester);
+
 // Home work , --> get , id by get, patch
 
 export const AcademicSemesterRoutes = route;
