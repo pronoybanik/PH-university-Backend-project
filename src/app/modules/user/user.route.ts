@@ -1,12 +1,12 @@
 import express from 'express';
 import { UserController } from './user.controller';
-import { StudentValidations } from '../student/student.vlidator';
-import validateJoiRequest from '../../middlewares/validateJoiRequest';
+import { studentValidations } from '../student/student.vlidator';
+import validateZodRequest from '../../middlewares/validateZodRequest';
 const route = express.Router();
 
 route.post(
   '/create-student',
-  validateJoiRequest(StudentValidations.CreateStudentValidationSchema),
+  validateZodRequest(studentValidations.createStudentValidationSchema),
   UserController.createStudent,
 );
 
