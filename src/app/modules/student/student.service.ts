@@ -3,8 +3,18 @@ import { Student } from './student.interface';
 import mongoose from 'mongoose';
 import { UserModel } from '../user/user.module';
 
-const getAllStudentsFromDB = async () => {
-  const result = await StudentModel.find()
+const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  let searchTerm = '';
+
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  const result = await StudentModel.find({
+    $or: ['email', 'name.firstName', 'presentAddress'].map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+    })),
+  })
     .populate('admissionSemester')
     .populate('academicDepartment')
     .populate({
@@ -30,33 +40,6 @@ const getSingleStudentFromDB = async (id: string) => {
   // const result = await StudentModel.aggregate([{ $match: { id } }]);
   return result;
 };
-
-// const getSingleStudentFromDB = async (id: string) => {
-//   try {
-//     console.log("Searching for student with ID:", id);
-
-//     const result = await StudentModel.findOne({ id })
-//       .populate('admissionSemester')
-//       .populate('academicDepartment')
-//       .populate({
-//         path: 'academicDepartment',
-//         populate: {
-//           path: 'academicFaculty',
-//         },
-//       });
-
-//     if (!result) {
-//       console.log("No student found with the given ID.");
-//       return null; // or throw an error
-//     }
-
-//     console.log("Found student:", result);
-//     return result;
-//   } catch (error) {
-//     console.error("Error fetching student:", error);
-//     throw error; // Re-throw to handle at a higher level
-//   }
-// };
 
 const updateStudentIntoDB = async (id: string, payload: Partial<Student>) => {
   const { name, guardian, localGuardian, ...remainingStudentData } = payload;
@@ -139,10 +122,10 @@ const deletedStudentFromDB = async (id: string) => {
     await session.endSession();
 
     return deleteStudent;
-  } catch (error) {
+  } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();
-    throw new Error('Failed to to delete student');
+    throw new Error(error);
   }
 };
 
