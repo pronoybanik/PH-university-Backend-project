@@ -151,7 +151,7 @@ const studentSchema = new Schema<Student>(
 
 // virtual
 studentSchema.virtual('fullName').get(function () {
-  return `${this.name.firstName}  ${this.name.middleName}  ${this.name.lastName}`;
+  return `${this?.name?.firstName}  ${this?.name?.middleName}  ${this?.name?.lastName}`;
 });
 
 // Query Middleware
