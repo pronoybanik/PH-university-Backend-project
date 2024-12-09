@@ -5,7 +5,7 @@ import { studentValidations } from './student.vlidator';
 const route = express.Router();
 
 route.get('/', StudentControllers.getAllStudents);
-route.get('/:studentId', StudentControllers.getSingleStudent);
+route.get('/:id', StudentControllers.getSingleStudent);
 route.delete('/:id', StudentControllers.deleteStudent);
 route.patch(
   '/:id',
