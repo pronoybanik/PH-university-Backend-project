@@ -12,10 +12,13 @@ route.post(
 route.get('/', CourseController.getAllCourse);
 route.get('/:id', CourseController.getSingleCourseFaculty);
 route.delete('/:id', CourseController.deleteCourse);
-// route.patch(
-//   '/:id',
-//   validateZodRequest(studentValidations.updateStudentValidationSchema),
-//   CourseController.deleteCourse,
-// );
+route.patch(
+  '/:id',
+  validateZodRequest(CourseValidation.updateCourseValidationSchema),
+  CourseController.updateCourse,
+);
+route.put('/:courseId/assign-faculties', CourseController.assignFaculties);
+
+route.delete('/:courseId/remove-faculties', CourseController.removeFaculties);
 
 export const CourseRoute = route;
