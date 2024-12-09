@@ -7,7 +7,7 @@ export type UserName = {
 };
 
 export type Guardian = {
-  gatherName: string;
+  fatherName: string;
   fatherOccupation: string;
   fatherContactNo: string;
   motherName: string;

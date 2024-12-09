@@ -8,7 +8,7 @@ import {
 
 // Guardian schema
 const guardianSchema = new Schema<Guardian>({
-  gatherName: { type: String, required: [true, 'Guardian name is required'] },
+  fatherName: { type: String, required: [true, 'Guardian name is required'] },
   fatherOccupation: {
     type: String,
     required: [true, "Father's occupation is required"],

@@ -62,6 +62,12 @@ const createStudentIntoBD = async (payload: Student, password: string) => {
   }
 };
 
+const getAllStudentIntoDB = async () => {
+  const result = StudentModel.find();
+  return result;
+};
+
 export const UserService = {
   createStudentIntoBD,
+  getAllStudentIntoDB,
 };

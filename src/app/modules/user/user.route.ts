@@ -10,4 +10,6 @@ route.post(
   UserController.createStudent,
 );
 
+route.get('/', UserController.getStudent);
+
 export const UserRoute = route;

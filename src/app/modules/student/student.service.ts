@@ -22,7 +22,7 @@ import { UserModel } from '../user/user.module';
 //     })),
 //   });
 
-//   // Filtering 
+//   // Filtering
 //   const excludeFields = ["searchTerm", "sort", "limit"];
 
 //   excludeFields.forEach((el) => delete queryObj[el])
@@ -45,9 +45,7 @@ import { UserModel } from '../user/user.module';
 //     sort = query.sort as string;
 //   }
 
-
 //   const sortQuery =  filterQuery.sort(sort)
-
 
 //   let limit = 1;
 //   if (query.limit) {
@@ -59,7 +57,6 @@ import { UserModel } from '../user/user.module';
 //   return limitQuery;
 
 // };
-
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   console.log('base query', query);
@@ -74,15 +71,20 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     searchTerm = query.searchTerm as string;
   }
 
-  // Create the search query
-  const searchQuery = StudentModel.find({
-    $or: studentSearchableFields.map((field) => ({
+  // Create the search query only if searchTerm is non-empty
+  let searchConditions: any = [];
+  if (searchTerm.trim()) {
+    searchConditions = studentSearchableFields.map((field) => ({
       [field]: { $regex: searchTerm, $options: 'i' },
-    })),
-  });
+    }));
+  }
+
+  const searchQuery = StudentModel.find(
+    searchConditions.length > 0 ? { $or: searchConditions } : {}, // If no searchTerm, fallback to an empty condition
+  );
 
   // Exclude unnecessary fields from the filtering query
-  const excludeFields = ['searchTerm', 'sort', 'limit', "page", "fields"];
+  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   excludeFields.forEach((el) => delete queryObj[el]);
 
   console.log('query', { query, queryObj });
@@ -108,43 +110,39 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   }
   searchQuery.sort(sort);
 
-  // Limit
+  // Pagination
   let page = 1;
-  let limit = 1;
+  let limit = 10; // Default limit
   let skip = 0;
 
   if (query.limit) {
-    limit = parseInt(query.limit as string);
+    limit = parseInt(query.limit as string, 10);
   }
 
   if (query.page) {
-    page = parseInt(query.page as string)
-    skip = (page - 1) * limit
+    page = parseInt(query.page as string, 10);
+    skip = (page - 1) * limit;
   }
 
-  searchQuery.limit(skip)
-
-  searchQuery.limit(limit);
+  searchQuery.skip(skip).limit(limit);
 
   // Field limiting
-  let fields = "- __v";
+  let fields = '-__v'; // Default to excluding `__v`
 
   if (query.fields) {
-    fields = (query.fields as string).split(",").join(" ")
+    fields = (query.fields as string).split(',').join(' ');
   }
 
-  searchQuery.select(fields)
+  searchQuery.select(fields);
 
   // Execute the query
-  const students = await searchQuery;
+  const students = await searchQuery.exec(); // Use `exec` for consistency
 
   return students;
 };
 
-
-
 const getSingleStudentFromDB = async (id: string) => {
-  const result = await StudentModel.findOne({ id: id.toString() })
+  const result = await StudentModel.findById(id)
     .populate('admissionSemester')
     .populate('academicDepartment')
     .populate({
@@ -196,14 +194,10 @@ const updateStudentIntoDB = async (id: string, payload: Partial<Student>) => {
 
   console.log(modifiedUpdatedData);
 
-  const result = await StudentModel.findOneAndUpdate(
-    { id },
-    modifiedUpdatedData,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+  const result = await StudentModel.findByIdAndUpdate(id, modifiedUpdatedData, {
+    new: true,
+    runValidators: true,
+  });
   return result;
 };
 
@@ -211,8 +205,8 @@ const deletedStudentFromDB = async (id: string) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const deleteStudent = await StudentModel.findOneAndUpdate(
-      { id },
+    const deleteStudent = await StudentModel.findByIdAndUpdate(
+      id,
       {
         isDeleted: true,
       },
@@ -223,8 +217,10 @@ const deletedStudentFromDB = async (id: string) => {
       throw new Error('Failed to delete student');
     }
 
+    const userId = deleteStudent.user;
+
     const deletedUser = await UserModel.findOneAndUpdate(
-      { id },
+      userId,
       {
         isDeleted: true,
       },

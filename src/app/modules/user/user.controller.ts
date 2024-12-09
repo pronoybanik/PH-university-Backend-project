@@ -4,8 +4,9 @@ import { UserService } from './user.service';
 import httpStatus from 'http-status';
 
 const createStudent = catchAsync(async (req, res, next) => {
-  const { student: studentData, password } = req.body;
-  const result = await UserService.createStudentIntoBD(studentData, password);
+  const { student, password } = req.body;
+
+  const result = await UserService.createStudentIntoBD(student, password);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -15,6 +16,18 @@ const createStudent = catchAsync(async (req, res, next) => {
   });
 });
 
+const getStudent = catchAsync(async (req, res, next) => {
+  const result = await UserService.getAllStudentIntoDB();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student got data  successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createStudent,
+  getStudent,
 };
