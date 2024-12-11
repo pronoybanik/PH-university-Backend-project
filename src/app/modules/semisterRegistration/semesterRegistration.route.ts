@@ -15,18 +15,18 @@ router.post(
 
 router.get('/', SemesterRegistrationController.getAllSemesterRegistrations);
 
-// router.get(
-//   '/:id',
-//   SemesterRegistrationController.getSingleSemesterRegistration,
-// );
+router.get(
+  '/:id',
+  SemesterRegistrationController.getSingleSemesterRegistration,
+);
 
-// router.patch(
-//   '/:id',
-//   validateRequest(
-//     SemesterRegistrationValidations.upadateSemesterRegistrationValidationSchema,
-//   ),
-//   SemesterRegistrationController.updateSemesterRegistration,
-// );
+router.patch(
+  '/:id',
+  validateZodRequest(
+    SemesterRegistrationValidations.updateSemesterRegistrationValidationSchema,
+  ),
+  SemesterRegistrationController.updateSemesterRegistration,
+);
 
 // router.get(
 //   '/:id',
@@ -37,6 +37,5 @@ router.get('/', SemesterRegistrationController.getAllSemesterRegistrations);
 //   '/:id',
 //   SemesterRegistrationController.deleteSemesterRegistration,
 // );
-
 
 export const semesterRegistrationRoutes = router;
