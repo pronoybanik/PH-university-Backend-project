@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 
 // Global error handling
 app.use(globalErrorHandler);
+
 app.use(NotFound);
 
 export default app;
