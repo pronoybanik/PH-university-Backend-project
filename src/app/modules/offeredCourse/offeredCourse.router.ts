@@ -15,4 +15,12 @@ router.post(
 
 router.get('/', OfferedCourseControllers.getAllOfferedCourses);
 
+router.patch(
+  '/:id',
+  validateZodRequest(
+    OfferedCourseValidations.updateOfferedCourseValidationSchema,
+  ),
+  OfferedCourseControllers.updateOfferedCourse,
+);
+
 export const offeredCourseRoutes = router;

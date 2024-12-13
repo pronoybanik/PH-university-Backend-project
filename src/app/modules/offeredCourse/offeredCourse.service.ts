@@ -6,6 +6,8 @@ import { OfferedCourseModule } from './offeredCourse.module';
 import { AcademicFacultyModel } from '../academicFaculty/academicFaculty.module';
 import { CourseModule } from '../course/course.module';
 import { AcademicDepartmentModel } from '../academicDepartment/academicDepartment.module';
+import { scheduler } from 'timers/promises';
+import { hasTimeConflict } from './OfferedCourse.utils';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -13,11 +15,11 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     academicFaculty,
     academicDepartment,
     course,
-    // section,
-    // faculty,
-    // days,
-    // startTime,
-    // endTime,
+    section,
+    faculty,
+    days,
+    startTime,
+    endTime,
   } = payload;
 
   //check if the semester registration id is exists!
@@ -59,8 +61,60 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   //     throw new AppError(httpStatus.NOT_FOUND, 'Faculty not found !');
   //   }
 
+  // check if the department is belong to the  faculty
+  const isDepartmentBelongToFaculty = await AcademicDepartmentModel.findOne({
+    _id: academicDepartment,
+    academicFaculty,
+  });
+
+  if (!isDepartmentBelongToFaculty) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `This ${isAcademicDepartmentExits.name} is not  belong to this ${isAcademicFacultyExits.name}`,
+    );
+  }
+
+  // check if the same offered course same section in same registered semester exists
+
+  const isSameOfferedCourseExistsWithSameRegisteredSemesterWithSameSection =
+    await OfferedCourseModule.findOne({
+      semesterRegistration,
+      course,
+      section,
+    });
+
+  if (isSameOfferedCourseExistsWithSameRegisteredSemesterWithSameSection) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Offered course with same section is already exist!`,
+    );
+  }
+
+  //get the schedules of the faculties
+
+  const assignedSchedules = await OfferedCourseModule.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days },
+  }).select('days startTime endTime');
+
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
+
+  if (hasTimeConflict(assignedSchedules, newSchedule)) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      `This faculty is not available at that time ! Choose other time or day`,
+    );
+  }
+
   const result = OfferedCourseModule.create({ ...payload, academicSemester });
   return result;
+
+  // return null;
 };
 
 const getAllOfferedCoursesFromDB = async () => {
@@ -84,10 +138,14 @@ const getSingleOfferedCourseFromDB = async (id: string) => {
   return offeredCourse;
 };
 
+const updateOfferedCourseIntoDB = async (
+  id: string,
+  payload: Pick<TOfferedCourse, 'faculty' | 'days' | 'startTime' | 'endTime'>,
+) => {};
+
 export const OfferedCourseServices = {
   createOfferedCourseIntoDB,
   getAllOfferedCoursesFromDB,
   getSingleOfferedCourseFromDB,
-  // deleteOfferedCourseFromDB,
-  // updateOfferedCourseIntoDB,
+  updateOfferedCourseIntoDB,
 };
