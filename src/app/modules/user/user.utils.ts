@@ -1,24 +1,6 @@
 import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { UserModel } from './user.module';
 
-const findLastStudentId = async () => {
-  const lastStudent = await UserModel.findOne(
-    {
-      role: 'student',
-    },
-    {
-      id: 1,
-      _id: 0,
-    },
-  )
-    .sort({
-      createdAt: -1,
-    })
-    .lean();
-
-  return lastStudent?.id ? lastStudent.id : undefined;
-};
-
 
 
 // Admin ID
@@ -40,6 +22,20 @@ export const findLastAdminId = async () => {
   return lastAdmin?.id ? lastAdmin.id.substring(2) : undefined;
 };
 
+export const generateAdminId = async () => {
+  let currentId = (0).toString();
+  const lastAdminId = await findLastAdminId();
+
+  if (lastAdminId) {
+    currentId = lastAdminId.substring(2);
+  }
+
+  let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+
+  incrementId = `A-${incrementId}`;
+  return incrementId;
+};
+
 // Faculty ID
 export const findLastFacultyId = async () => {
   const lastFaculty = await UserModel.findOne(
@@ -59,20 +55,6 @@ export const findLastFacultyId = async () => {
   return lastFaculty?.id ? lastFaculty.id.substring(2) : undefined;
 };
 
-export const generateAdminId = async () => {
-  let currentId = (0).toString();
-  const lastAdminId = await findLastAdminId();
-
-  if (lastAdminId) {
-    currentId = lastAdminId.substring(2);
-  }
-
-  let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
-
-  incrementId = `A-${incrementId}`;
-  return incrementId;
-};
-
 export const generateFacultyId = async () => {
   let currentId = (0).toString();
   const lastFacultyId = await findLastFacultyId();
@@ -84,8 +66,30 @@ export const generateFacultyId = async () => {
   let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
 
   incrementId = `F-${incrementId}`;
+  console.log(incrementId);
+  
 
   return incrementId;
+};
+
+
+// Student ID
+const findLastStudentId = async () => {
+  const lastStudent = await UserModel.findOne(
+    {
+      role: 'student',
+    },
+    {
+      id: 1,
+      _id: 0,
+    },
+  )
+    .sort({
+      createdAt: -1,
+    })
+    .lean();
+
+  return lastStudent?.id ? lastStudent.id : undefined;
 };
 
 export const generateStudentId = async (payload: TAcademicSemester) => {

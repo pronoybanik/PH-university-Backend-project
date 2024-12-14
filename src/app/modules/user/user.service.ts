@@ -6,7 +6,11 @@ import { Student } from '../student/student.interface';
 import { StudentModel } from '../student/student.module';
 import { TUser } from './user.interface';
 import { UserModel } from './user.module';
-import { generateAdminId, generateFacultyId, generateStudentId } from './user.utils';
+import {
+  generateAdminId,
+  generateFacultyId,
+  generateStudentId,
+} from './user.utils';
 import AppError from '../../middlewares/AppError';
 import { TAdmin } from '../Admin/admin.interface';
 import httpStatus from 'http-status';
@@ -120,67 +124,65 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
-// const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
-//   // create a user object
-//   const userData: Partial<TUser> = {};
+const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+  // create a user object
+  const userData: Partial<TUser> = {};
 
-//   //if password is not given , use deafult password
-//   userData.password = password || (config.default_password as string);
+  //if password is not given , use deafult password
+  userData.password = password || (config.default_password as string);
 
-//   //set student role
-//   userData.role = 'faculty';
+  //set student role
+  userData.role = 'faculty';
 
-//   // find academic department info
-//   const academicDepartment = await AcademicDepartmentModel.findById(
-//     payload.academicDepartment,
-//   );
+  // find academic department info
+  const academicDepartment = await AcademicDepartmentModel.findById(
+    payload.academicDepartment,
+  );
 
-//   if (!academicDepartment) {
-//     throw new AppError(400, 'Academic department not found');
-//   }
+  if (!academicDepartment) {
+    throw new AppError(400, 'Academic department not found');
+  }
 
-//   const session = await mongoose.startSession();
+  const session = await mongoose.startSession();
 
-//   try {
-//     session.startTransaction();
-//     //set  generated id
-//     userData.id = await generateFacultyId();
-//     console.log(userData.id);
-    
+  try {
+    session.startTransaction();
+    //set  generated id
+    userData.id = await generateFacultyId();
 
-//     // create a user (transaction-1)
-//     const newUser = await UserModel.create([userData], { session }); // array
+    // create a user (transaction-1)
+    const newUser = await UserModel.create([userData], { session }); // array
 
-//     //create a faculty
-//     if (!newUser.length) {
-//       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
-//     }
-//     // set id , _id as user
-//     payload.id = newUser[0].id;
-//     payload.user = newUser[0]._id; //reference _id
+    //create a faculty
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
+    }
+    // set id , _id as user
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id; //reference _id
 
-//     // create a faculty (transaction-2)
+    // create a faculty (transaction-2)
 
-//     const newFaculty = await Faculty.create([payload], { session });
+    const newFaculty = await Faculty.create([payload], { session });
 
-//     if (!newFaculty.length) {
-//       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create faculty');
-//     }
+    if (!newFaculty.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create faculty');
+    }
 
-//     await session.commitTransaction();
-//     await session.endSession();
+    await session.commitTransaction();
+    await session.endSession();
 
-//     return newFaculty;
-//   } catch (err: any) {
-//     await session.abortTransaction();
-//     await session.endSession();
-//     throw new Error(err);
-//   }
-// };
+    return newFaculty;
+  } catch (err: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(err);
+  }
+};
 
 export const UserService = {
   createStudentIntoBD,
   getAllStudentIntoDB,
   createAdminIntoDB,
-  // createFacultyIntoDB
+  createFacultyIntoDB
 };

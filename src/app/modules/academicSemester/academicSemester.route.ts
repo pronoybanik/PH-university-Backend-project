@@ -2,6 +2,7 @@ import express from 'express';
 import { AcademicSemesterControllers } from './academicSemester.controller';
 import { AcademicSemesterValidation } from './academicSemester.vlidator';
 import validateZodRequest from '../../middlewares/validateZodRequest';
+import auth from '../../middlewares/auth';
 const route = express.Router();
 
 route.post(
@@ -12,7 +13,7 @@ route.post(
   AcademicSemesterControllers.createAcademicSemester,
 );
 
-route.get('/', AcademicSemesterControllers.getAllAcademicSemester);
+route.get('/', auth(), AcademicSemesterControllers.getAllAcademicSemester);
 
 // Home work , --> get , id by get, patch
 
