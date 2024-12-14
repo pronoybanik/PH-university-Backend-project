@@ -6,17 +6,18 @@ import { TFaculty } from './faculty.interface';
 import { Faculty } from './faculty.model';
 
 const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
-  const facultyQuery = new QueryBuilder(
-    Faculty.find().populate('academicDepartment'),
-    query,
-  )
-    .search(FacultySearchableFields)
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+  // const facultyQuery = new QueryBuilder(
+  //   Faculty.find().populate('academicDepartment'),
+  //   query,
+  // )
+  //   .search(FacultySearchableFields)
+  //   .filter()
+  //   .sort()
+  //   .paginate()
+  //   .fields();
 
-  const result = await facultyQuery.modelQuery;
+  // const result = await facultyQuery.modelQuery;
+  const result = Faculty.find()
   return result;
 };
 
