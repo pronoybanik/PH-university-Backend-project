@@ -184,5 +184,5 @@ export const UserService = {
   createStudentIntoBD,
   getAllStudentIntoDB,
   createAdminIntoDB,
-  createFacultyIntoDB
+  createFacultyIntoDB,
 };

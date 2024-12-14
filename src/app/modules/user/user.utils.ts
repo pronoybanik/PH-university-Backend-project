@@ -1,8 +1,6 @@
 import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { UserModel } from './user.module';
 
-
-
 // Admin ID
 export const findLastAdminId = async () => {
   const lastAdmin = await UserModel.findOne(
@@ -67,11 +65,9 @@ export const generateFacultyId = async () => {
 
   incrementId = `F-${incrementId}`;
   console.log(incrementId);
-  
 
   return incrementId;
 };
-
 
 // Student ID
 const findLastStudentId = async () => {

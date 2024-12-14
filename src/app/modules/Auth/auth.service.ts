@@ -4,7 +4,7 @@ import { UserModel } from '../user/user.module';
 import { TLoginUser } from './auth.interface';
 import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
 const loginUser = async (payload: TLoginUser) => {
   // check of the user in exist
@@ -47,7 +47,6 @@ const loginUser = async (payload: TLoginUser) => {
     needsPasswordChange: user?.needsPasswordChange,
   };
 };
-
 
 const changePassword = async (
   userData: JwtPayload,
@@ -103,5 +102,5 @@ const changePassword = async (
 
 export const AuthServices = {
   loginUser,
-  changePassword
+  changePassword,
 };
