@@ -11,7 +11,7 @@ const createStudent = catchAsync(async (req, res, next) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Student create succesfully',
+    message: 'Student create successfully',
     data: result,
   });
 });
@@ -42,10 +42,8 @@ const getStudent = catchAsync(async (req, res, next) => {
 
 const createFaculty = catchAsync(async (req, res) => {
   const { password, faculty: facultyData } = req.body;
-  console.log(req.body);
 
   const result = await UserService.createFacultyIntoDB(password, facultyData);
-  console.log('prient 2', result);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

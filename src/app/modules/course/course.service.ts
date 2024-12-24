@@ -121,8 +121,6 @@ const assignFacultiesWithCourseIntoDB = async (
   id: string,
   payload: Partial<TCourseFaculty>,
 ) => {
-  console.log({ id, payload });
-
   const result = await CourseFacultyModel.findByIdAndUpdate(
     id,
     {

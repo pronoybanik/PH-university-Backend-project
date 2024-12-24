@@ -37,7 +37,7 @@ const createStudentIntoBD = async (payload: Student, password: string) => {
   try {
     session.startTransaction();
 
-    // set  generated id
+    // set generated id
     userData.id = await generateStudentId(
       admissionSemester as TAcademicSemester,
     );
@@ -45,7 +45,7 @@ const createStudentIntoBD = async (payload: Student, password: string) => {
     // create a user (transaction-1)
     const newUser = await UserModel.create([userData], { session }); // array
 
-    //create a student
+    // create a student
     if (!newUser.length) {
       throw new Error('Failed to create user');
     }

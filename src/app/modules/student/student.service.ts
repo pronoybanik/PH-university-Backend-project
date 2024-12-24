@@ -59,7 +59,6 @@ import { UserModel } from '../user/user.module';
 // };
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-  console.log('base query', query);
 
   const queryObj = { ...query };
 
@@ -87,7 +86,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   excludeFields.forEach((el) => delete queryObj[el]);
 
-  console.log('query', { query, queryObj });
+
 
   // Apply additional filters
   searchQuery.find(queryObj);
@@ -193,7 +192,7 @@ const updateStudentIntoDB = async (id: string, payload: Partial<Student>) => {
     }
   }
 
-  console.log(modifiedUpdatedData);
+
 
   const result = await StudentModel.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true,
