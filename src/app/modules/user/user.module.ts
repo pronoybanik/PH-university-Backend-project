@@ -10,6 +10,11 @@ const userSchema = new Schema<TUser, UserModelInterface>(
       required: true,
       unique: true,
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     password: {
       type: String,
       required: true,
@@ -58,6 +63,7 @@ userSchema.post('save', function (doc, next) {
   next();
 });
 
+// useing statics middaleware
 userSchema.statics.isUserExistsByCustomId = async function (id: string) {
   return await UserModel.findOne({ id }).select('+password');
 };

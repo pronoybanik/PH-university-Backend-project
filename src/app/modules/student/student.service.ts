@@ -59,7 +59,6 @@ import { UserModel } from '../user/user.module';
 // };
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-
   const queryObj = { ...query };
 
   const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
@@ -85,8 +84,6 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   // Exclude unnecessary fields from the filtering query
   const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   excludeFields.forEach((el) => delete queryObj[el]);
-
-
 
   // Apply additional filters
   searchQuery.find(queryObj);
@@ -191,8 +188,6 @@ const updateStudentIntoDB = async (id: string, payload: Partial<Student>) => {
       modifiedUpdatedData[`localGuardian.${key}`] = value;
     }
   }
-
-
 
   const result = await StudentModel.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true,

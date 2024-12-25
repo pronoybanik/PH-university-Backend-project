@@ -54,7 +54,7 @@ const UserNameSchema = new Schema<UserName>({
   },
   middleName: {
     type: String,
-    required: [true, 'Middle name is required']
+    required: [true, 'Middle name is required'],
   },
   lastName: {
     type: String,

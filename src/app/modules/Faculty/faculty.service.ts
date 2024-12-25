@@ -17,7 +17,7 @@ const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
   //   .fields();
 
   // const result = await facultyQuery.modelQuery;
-  const result = Faculty.find()
+  const result = Faculty.find();
   return result;
 };
 
