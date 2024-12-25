@@ -29,4 +29,6 @@ route.post(
 
 route.get('/', UserController.getStudent);
 
+route.get('/me', auth('student', 'faculty', 'admin'), UserController.getMe);
+
 export const UserRoute = route;

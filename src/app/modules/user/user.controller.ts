@@ -1,3 +1,4 @@
+import AppError from '../../middlewares/AppError';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponst';
 import { UserService } from './user.service';
@@ -48,7 +49,26 @@ const createFaculty = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Faculty is created succesfully',
+    message: 'Faculty is created successfully',
+    data: result,
+  });
+});
+
+const getMe = catchAsync(async (req, res) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Token not found !');
+  }
+
+  const { userId, role } = req.user;
+
+  const result = await UserService.getMe(userId, role);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User is retrieved successfully',
     data: result,
   });
 });
@@ -58,4 +78,5 @@ export const UserController = {
   createAdmin,
   getStudent,
   createFaculty,
+  getMe,
 };
