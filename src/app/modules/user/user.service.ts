@@ -18,6 +18,7 @@ import { Admin } from '../Admin/admin.model';
 import { Faculty } from '../Faculty/faculty.model';
 import { AcademicDepartmentModel } from '../academicDepartment/academicDepartment.module';
 import { TFaculty } from '../Faculty/faculty.interface';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 const createStudentIntoBD = async (payload: Student, password: string) => {
   const userData: Partial<TUser> = {};
