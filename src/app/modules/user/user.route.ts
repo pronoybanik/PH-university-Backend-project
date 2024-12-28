@@ -6,6 +6,7 @@ import { createAdminValidationSchema } from '../Admin/admin.validation';
 import { createFacultyValidationSchema } from '../Faculty/faculty.validation';
 import auth from '../../middlewares/auth';
 import { USER_ROLE } from './user.constant';
+import { UserValidation } from './user.validation';
 const route = express.Router();
 
 route.post(
@@ -25,6 +26,13 @@ route.post(
   '/create-admin',
   validateZodRequest(createAdminValidationSchema),
   UserController.createAdmin,
+);
+
+route.post(
+  '/change-status/:id',
+  auth(USER_ROLE.admin),
+  validateZodRequest(UserValidation.changeStatusValidationSchema),
+  UserController.changeStatus,
 );
 
 route.get('/', UserController.getStudent);
