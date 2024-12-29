@@ -34,6 +34,7 @@ const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
     ...remainingFacultyData,
   };
 
+  // dynamic update
   if (name && Object.keys(name).length) {
     for (const [key, value] of Object.entries(name)) {
       modifiedUpdatedData[`name.${key}`] = value;

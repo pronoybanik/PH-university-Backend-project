@@ -18,7 +18,7 @@ router.get('/:id', FacultyControllers.getSingleFaculty);
 
 router.get(
   '/',
-  auth(USER_ROLE.admin, USER_ROLE.faculty),
+  // auth(USER_ROLE.admin, USER_ROLE.faculty),
   FacultyControllers.getAllFaculties,
 );
 
