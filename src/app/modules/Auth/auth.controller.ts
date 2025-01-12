@@ -14,11 +14,15 @@ const loginUser = catchAsync(async (req, res) => {
     sameSite: 'none',
     maxAge: 1000 * 60 * 60 * 24 * 365,
   });
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User is logged in successfully!',
-    data: result,
+    data: {
+      accessToken,
+      needsPasswordChange,
+    },
   });
 });
 
@@ -58,9 +62,22 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+const refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+  const result = await AuthServices.refreshToken(refreshToken);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Access token is retrieved succesfully!',
+    data: result,
+  });
+});
+
 export const AuthControllers = {
   loginUser,
   changePassword,
   forgetPassword,
   resetPassword,
+  refreshToken
 };
