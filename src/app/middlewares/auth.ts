@@ -11,54 +11,44 @@ const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;
 
-    // checking if the token is missing
     if (!token) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Authorization token is missing!');
     }
 
-    let decoded;
-
+    let decoded: JwtPayload;
     try {
-      // checking if the given token is valid
-      decoded = jwt.verify(
-        token,
-        config.jwt_access_secret as string,
-      ) as JwtPayload;
+      decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
     } catch (error) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "UNAUTHORIZED")
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid or expired token!');
     }
 
-    const { role, userId, iat } = decoded;
+    const { role, userId } = decoded;
 
-    // check of the user in exist
+    if (!userId || !role) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid token payload!');
+    }
+
     const user = await UserModel.isUserExistsByCustomId(userId);
     if (!user) {
-      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+      throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
     }
 
-    // checking if the user is already deleted
-    const isDeleted = user?.isDeleted;
-    if (isDeleted) {
-      throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted!');
+    if (user.isDeleted) {
+      throw new AppError(httpStatus.FORBIDDEN, 'This user has been deleted!');
     }
 
-    // checking if the user is blocked
-    const userStatus = user?.status;
-    if (userStatus === 'blocked') {
-      throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
+    if (user.status === 'blocked') {
+      throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!');
     }
 
-    if (requiredRoles && !requiredRoles.includes(role)) {
-      throw new AppError(
-        httpStatus.UNAUTHORIZED,
-        'You are not authorized  hi!',
-      );
+    if (requiredRoles.length && !requiredRoles.includes(role)) {
+      throw new AppError(httpStatus.FORBIDDEN, 'You do not have the required permissions!');
     }
 
-    req.user = decoded as JwtPayload;
-
+    req.user = decoded; 
     next();
   });
 };
 
 export default auth;
+
