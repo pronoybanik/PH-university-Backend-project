@@ -14,7 +14,7 @@ route.post(
   AcademicSemesterControllers.createAcademicSemester,
 );
 
-route.get('/', auth(USER_ROLE.admin), AcademicSemesterControllers.getAllAcademicSemester);
+route.get('/', auth(USER_ROLE.admin), AcademicSemesterControllers.getAllAcademicSemesters);
 
 // Home work , --> get , id by get, patch
 
