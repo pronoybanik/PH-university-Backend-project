@@ -2,6 +2,8 @@ import { StudentModel } from './student.module';
 import { Student } from './student.interface';
 import mongoose from 'mongoose';
 import { UserModel } from '../user/user.module';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { studentSearchableFields } from './student.constant';
 
 // const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
 //   console.log('base query', query);
@@ -58,84 +60,107 @@ import { UserModel } from '../user/user.module';
 
 // };
 
+// const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+//   const queryObj = { ...query };
+
+//   const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+
+//   // Extract searchTerm from the query
+//   let searchTerm = '';
+//   if (query?.searchTerm) {
+//     searchTerm = query.searchTerm as string;
+//   }
+
+//   // Create the search query only if searchTerm is non-empty
+//   let searchConditions: any = [];
+//   if (searchTerm.trim()) {
+//     searchConditions = studentSearchableFields.map((field) => ({
+//       [field]: { $regex: searchTerm, $options: 'i' },
+//     }));
+//   }
+
+//   const searchQuery = StudentModel.find(
+//     searchConditions.length > 0 ? { $or: searchConditions } : {}, // If no searchTerm, fallback to an empty condition
+//   );
+
+//   // Exclude unnecessary fields from the filtering query
+//   const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+//   excludeFields.forEach((el) => delete queryObj[el]);
+
+//   // Apply additional filters
+//   searchQuery.find(queryObj);
+
+//   // Populate related fields
+//   searchQuery
+//     .populate('user')
+//     .populate('admissionSemester')
+//     .populate('academicDepartment')
+//     .populate({
+//       path: 'academicDepartment',
+//       populate: {
+//         path: 'academicFaculty',
+//       },
+//     });
+
+//   // Sorting
+//   let sort = '-createdAt';
+//   if (query.sort) {
+//     sort = query.sort as string;
+//   }
+//   searchQuery.sort(sort);
+
+//   // Pagination
+//   let page = 1;
+//   let limit = 10; // Default limit
+//   let skip = 0;
+
+//   if (query.limit) {
+//     limit = parseInt(query.limit as string, 10);
+//   }
+
+//   if (query.page) {
+//     page = parseInt(query.page as string, 10);
+//     skip = (page - 1) * limit;
+//   }
+
+//   searchQuery.skip(skip).limit(limit);
+
+//   // Field limiting
+//   let fields = '-__v'; // Default to excluding `__v`
+
+//   if (query.fields) {
+//     fields = (query.fields as string).split(',').join(' ');
+//   }
+
+//   searchQuery.select(fields);
+
+//   // Execute the query
+//   const students = await searchQuery.exec(); // Use `exec` for consistency
+
+//   return students;
+// };
+
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-  const queryObj = { ...query };
+  const studentQuery = new QueryBuilder(
+    StudentModel.find()
+      .populate('user')
+      .populate('admissionSemester')
+      .populate('academicDepartment academicFaculty'),
+    query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+  const meta = await studentQuery.countTotal();
+  const result = await studentQuery.modelQuery;
 
-  // Extract searchTerm from the query
-  let searchTerm = '';
-  if (query?.searchTerm) {
-    searchTerm = query.searchTerm as string;
-  }
-
-  // Create the search query only if searchTerm is non-empty
-  let searchConditions: any = [];
-  if (searchTerm.trim()) {
-    searchConditions = studentSearchableFields.map((field) => ({
-      [field]: { $regex: searchTerm, $options: 'i' },
-    }));
-  }
-
-  const searchQuery = StudentModel.find(
-    searchConditions.length > 0 ? { $or: searchConditions } : {}, // If no searchTerm, fallback to an empty condition
-  );
-
-  // Exclude unnecessary fields from the filtering query
-  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
-  excludeFields.forEach((el) => delete queryObj[el]);
-
-  // Apply additional filters
-  searchQuery.find(queryObj);
-
-  // Populate related fields
-  searchQuery
-    .populate('user')
-    .populate('admissionSemester')
-    .populate('academicDepartment')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    });
-
-  // Sorting
-  let sort = '-createdAt';
-  if (query.sort) {
-    sort = query.sort as string;
-  }
-  searchQuery.sort(sort);
-
-  // Pagination
-  let page = 1;
-  let limit = 10; // Default limit
-  let skip = 0;
-
-  if (query.limit) {
-    limit = parseInt(query.limit as string, 10);
-  }
-
-  if (query.page) {
-    page = parseInt(query.page as string, 10);
-    skip = (page - 1) * limit;
-  }
-
-  searchQuery.skip(skip).limit(limit);
-
-  // Field limiting
-  let fields = '-__v'; // Default to excluding `__v`
-
-  if (query.fields) {
-    fields = (query.fields as string).split(',').join(' ');
-  }
-
-  searchQuery.select(fields);
-
-  // Execute the query
-  const students = await searchQuery.exec(); // Use `exec` for consistency
-
-  return students;
+  return {
+    meta,
+    result,
+  };
 };
 
 const getSingleStudentFromDB = async (id: string) => {
