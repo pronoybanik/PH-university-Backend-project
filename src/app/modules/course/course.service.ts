@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { TCourse, TCourseFaculty } from './course.interface';
 import {
-  CourseFaculty,
   CourseFacultyModel,
   CourseModule,
 } from './course.module';
@@ -10,18 +9,21 @@ const createCourseIntoDB = async (payload: TCourse) => {
   const result = await CourseModule.create(payload);
   return result;
 };
+
 const getAllCourseFromDB = async () => {
   const result = await CourseModule.find().populate(
     'preRequisiteCourses.course',
   );
   return result;
 };
+
 const getSingleCourseFromDB = async (id: string) => {
   const result = await CourseModule.findById(id).populate(
     'preRequisiteCourses.course',
   );
   return result;
 };
+
 const deleteCourseIntoDB = async (id: string) => {
   const result = await CourseModule.findByIdAndUpdate(
     id,
@@ -153,6 +155,13 @@ const removeFacultiesWithCourseIntoDB = async (
   return result;
 };
 
+const getFacultiesWithCourseFromDB = async (courseId: string) => {
+  const result = await CourseFacultyModel.findOne({ course: courseId }).populate(
+    'faculties',
+  );
+  return result;
+};
+
 export const CourseServices = {
   createCourseIntoDB,
   getAllCourseFromDB,
@@ -161,4 +170,5 @@ export const CourseServices = {
   updateCourseIntoDB,
   assignFacultiesWithCourseIntoDB,
   removeFacultiesWithCourseIntoDB,
+  getFacultiesWithCourseFromDB
 };
